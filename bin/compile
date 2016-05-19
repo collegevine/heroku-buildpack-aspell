@@ -13,7 +13,7 @@ echo "-----> Install Aspell package"
 ASPELL_URL="https://github.com/xavriley/heroku-buildpack-aspell/raw/master/aspell-0.60.6.1.tgz"
 curl -L $ASPELL_URL -o ${CACHE_DIR}/aspell.tgz
 tar -xf ${CACHE_DIR}/aspell.tgz -C ${CACHE_DIR}
-mv ${CACHE_DIR}/aspell-0.60.6/* $BUILD_DIR/vendor/aspell
+mv ${CACHE_DIR}/aspell/* $BUILD_DIR/vendor/aspell
 chmod +x ${BUILD_DIR}/vendor/aspell/bin/*
 rm -rf ${CACHE_DIR}
 
