@@ -13,6 +13,8 @@ $ git commit --allow-empty -m "Add aspell buildpack"
 
 # Usage
 
+## `ffi-aspell` gem
+
 Known to work with the `ffi-aspell` gem, with some configuration required.
 
 ```
@@ -29,3 +31,24 @@ terible: did you mean terrible?
 spelilng: did you mean spelling?
 => ["chcek", "our", "terible", "spelilng"]
 ```
+
+## `spellchecker` gem
+
+NB this gem is buggy and unmaintained and I wouldn't recommend it, but if you have no option...
+
+```
+irb(main):006:0> require 'spellchecker'
+irb(main):006:0> Spellchecker.aspell_path = "/app/vendor/aspell/bin/aspell --data-dir='/app/vendor/aspell/lib/aspell-0.60' --dict-dir='/app/vendor/aspell/lib/aspell-0.60'"
+=> "/app/vendor/aspell/bin/aspell --data-dir='/app/vendor/aspell/lib/aspell-0.60' --dict-dir='/app/vendor/aspell/lib/aspell-0.60'"
+irb(main):007:0> Spellchecker.check "some string"
+NameError: uninitialized constant Spellchecker::Tempfile
+from /app/vendor/ruby-ruby2.2.4/lib/ruby/gems/2.2.0/gems/spellchecker-0.1.5/lib/spellchecker.rb:19:in `check'
+from (irb):7
+from /app/bin/irb:15:in `<main>'
+irb(main):008:0> require 'tempfile' # buggy!
+=> true
+irb(main):009:0> Spellchecker.check "some string"
+=> [{:original=>"some", :correct=>true}, {:original=>"string", :correct=>true}]
+```
+
+All it does is shell out to a tempfile behind the scenes. It also uses class variables which seems like a bad idea.
