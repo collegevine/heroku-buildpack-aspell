@@ -3,8 +3,8 @@
 cat << EOF
 ---
 config_vars:
-  PATH: "/usr/local/bin:/usr/bin:/bin:/app/vendor/aspell/bin"
-  LD_LIBRARY_PATH: "/usr/local/lib:/usr/lib:/lib:/app/vendor/aspell/lib"
+  PATH: "/usr/local/bin:/usr/bin:/app/vendor/usr/bin"
+  LD_LIBRARY_PATH: "/usr/local/lib:/usr/lib:/lib:/app/vendor/usr/lib"
 default_process_types:
-  console: "vendor/aspell/bin/aspell"
+  console: "vendor/usr/bin/aspell"
 EOF
