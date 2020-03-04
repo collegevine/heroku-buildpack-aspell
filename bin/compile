@@ -1,55 +1,23 @@
-#!/usr/bin/env bash
-
-set -e
-
+#!/bin/bash
 BUILD_DIR=$1
 CACHE_DIR=$2/aspell
 
-mkdir -p $CACHE_DIR
-mkdir -p $BUILD_DIR/vendor
+ASPELL_VERSION=0.60.8
 
-rm -rfv $BUILD_DIR/.apt/bin/aspell
-rm -rfv $BUILD_DIR/.apt/lib/aspell
-sleep 5
-echo "-----> Install Aspell package"
+ASPELL_TGZ=aspell-$ASPELL_VERSION.tar.gz
 
-ASPELL_URL="https://ftp.gnu.org/gnu/aspell/aspell-0.60.8.tar.gz"
-curl -L $ASPELL_URL -o $CACHE_DIR/aspell.tar.gz
-tar -xvf $CACHE_DIR/aspell.tar.gz -C $CACHE_DIR
-sleep 3
-pwd
-ls -als $CACHE_DIR
-ls -als $BUILD_DIR
-mkdir -p $BUILD_DIR/vendor/aspell
-mkdir -p $BUILD_DIR/vendor/aspelldicts
-mkdir -p $BUILD_DIR/vendor/usr
-mkdir -p $BUILD_DIR/vendor/usr/lib
-mkdir -p $BUILD_DIR/vendor/usr/bin
-mkdir -p $BUILD_DIR/vendor/usr/sbin
-mkdir -p $BUILD_DIR/vendor/usr/share
+INSTALL_DIR=$BUILD_DIR/vendor/aspell/
+PROFILE_PATH=$BUILD_DIR/.profile.d
+ENVSCRIPT=$PROFILE_PATH/aspell.sh
 
-ls -als $BUILD_DIR/vendor
-mv -fv $CACHE_DIR/aspell-0.60.8 $BUILD_DIR/vendor/aspell/
-sleep 3
-cd $BUILD_DIR/vendor/aspell/aspell-0.60.8
+echo "Unpacking aSpell binary"
+mkdir -p "$INSTALL_DIR"
+tar -xzvf "$ASPELL_TGZ" -C "$CACHE_DIR"
+mv "$CACHE_DIR/aspell/*" "$INSTALL_DIR"
+chmod +x "$INSTALL_DIR/bin/*"
+rm -rf "$CACHE_DIR"
 
-./configure --prefix=$BUILD_DIR/vendor/usr && make && make install
-rm -rf $CACHE_DIR
-
-cd $BUILD_DIR/vendor/aspelldicts
-
-echo "-----> Install Aspell dicts"
-
-ASPELL_PT_BR_URL="https://ftp.gnu.org/gnu/aspell/dict/pt_BR/aspell6-pt_BR-20131030-12-0.tar.bz2"
-ASPELL_PT_PT_URL="https://ftp.gnu.org/gnu/aspell/dict/pt_PT/aspell6-pt_PT-20190329-1-0.tar.bz2"
-ASPELL_EN_URL="https://ftp.gnu.org/gnu/aspell/dict/en/aspell6-en-2019.10.06-0.tar.bz2"
-ASPELL_ES_URL="https://ftp.gnu.org/gnu/aspell/dict/es/aspell6-es-1.11-2.tar.bz2"
-
-# curl -L $ASPELL_URL -o $CACHE_DIR/aspell.tar.gz
-cp -ar $BUILD_DIR/vendor/usr/* $BUILD_DIR/.apt/usr/
-PROFILE_PATH=$BUILD_DIR/.profile.d/aspell.sh
-mkdir -p $(dirname $PROFILE_PATH)
-echo 'export PATH="$PATH:vendor/usr/bin"' >> $PROFILE_PATH
-echo 'export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:vendor/usr/lib"' >> $PROFILE_PATH
-
-exit 0
+echo "Building runtime environment for aspell"
+mkdir -p "$PROFILE_PATH"
+echo 'export PATH="$PATH:vendor/aspell/bin"' > "$ENVSCRIPT"
+echo 'export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:vendor/aspell/lib"' >> "$ENVSCRIPT"
